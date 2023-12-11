@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:restaurant_app/model/local_restaurant.dart';
+import 'package:restaurant_app/data/model/list_restaurant.dart';
 
 List<RestaurantElement> parseRestaurant(String? json) {
   if (json == null) {
@@ -12,3 +12,9 @@ List<RestaurantElement> parseRestaurant(String? json) {
 
   return restaurants.map((json) => RestaurantElement.fromJson(json)).toList();
 }
+
+//  Column(
+//                             mainAxisAlignment: MainAxisAlignment.start,
+//                             children: restaurants
+//                                 .map((item) => RestaurantItem(item: item))
+//                                 .toList())

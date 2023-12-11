@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/model/local_restaurant.dart';
-import 'package:restaurant_app/utils/parse.dart';
+import 'package:restaurant_app/data/api/api_service.dart';
+import 'package:restaurant_app/data/model/list_restaurant.dart';
 import 'package:restaurant_app/widget/restaurant_item.dart';
 
 class Home extends StatefulWidget {
@@ -12,27 +12,25 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var restaurants = <RestaurantElement>[];
+  bool isLoading = true;
+
   TextEditingController searchQuery = TextEditingController();
 
   void searchRestaurant() async {
-    var getJson = await DefaultAssetBundle.of(context)
-        .loadString('assets/json/local_restaurant.json');
+    setState(() {
+      isLoading = true;
+    });
+    var getJson = await ApiService().searchRestaurant(searchQuery.text);
 
-    final List<RestaurantElement> restaurantParse = parseRestaurant(getJson);
-
-    var restaurant = restaurantParse
-        .where((restaurant) => restaurant.name
-            .toLowerCase()
-            .contains(searchQuery.text.toLowerCase()))
-        .toList();
-
-    if (restaurant.isEmpty) {
+    if (getJson.restaurants.isEmpty) {
       setState(() {
         restaurants.clear();
+        isLoading = false;
       });
     } else {
       setState(() {
-        restaurants = restaurant;
+        restaurants = getJson.restaurants;
+        isLoading = false;
       });
     }
   }
@@ -40,6 +38,9 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
+    // _restaurant = ApiService().searchRestaurant("");
+
     searchRestaurant();
   }
 
@@ -118,14 +119,35 @@ class _HomeState extends State<Home> {
                     Container(
                         margin: const EdgeInsets.only(top: 16),
                         width: MediaQuery.of(context).size.width,
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: restaurants
-                                .map((item) => RestaurantItem(item: item))
-                                .toList())),
+                        child: isLoading
+                            ? const Padding(
+                                padding: EdgeInsets.only(top: 20),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              )
+                            : (restaurants.isEmpty)
+                                ? const Center(
+                                    child: Text("Tidak Ada Restoran"),
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: restaurants.length,
+                                    itemBuilder: (context, index) {
+                                      return RestaurantItem(
+                                        item: restaurants[index],
+                                      );
+                                    }))
                   ],
                 ),
               ))),
     );
+  }
+
+  @override
+  void dispose() {
+    // searchQuery.dispose();
+    super.dispose();
   }
 }

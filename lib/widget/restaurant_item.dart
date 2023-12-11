@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/model/local_restaurant.dart';
+import 'package:restaurant_app/constant/urls.dart';
+import 'package:restaurant_app/data/model/list_restaurant.dart';
 import 'package:restaurant_app/screens/restaurant_detail.dart';
 
 class RestaurantItem extends StatelessWidget {
@@ -24,7 +25,7 @@ class RestaurantItem extends StatelessWidget {
               child: Hero(
                 tag: item.pictureId,
                 child: Image.network(
-                  item.pictureId,
+                  imageMedium + item.pictureId,
                   fit: BoxFit.cover,
                 ),
               ),

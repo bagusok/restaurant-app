@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/model/local_restaurant.dart';
+import 'package:restaurant_app/data/model/restaurant_detail.dart';
 
 class DetailRestaurantMenu extends StatelessWidget {
   final String title;
-  final List<Drink> restaurant;
+  final List<Category> restaurant;
 
-  const DetailRestaurantMenu(
-      {Key? key, required this.title, required this.restaurant})
-      : super(key: key);
+  const DetailRestaurantMenu({
+    Key? key,
+    required this.title,
+    required this.restaurant,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

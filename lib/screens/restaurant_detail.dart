@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/model/local_restaurant.dart';
-import 'package:restaurant_app/utils/parse.dart';
+import 'package:restaurant_app/constant/urls.dart';
+import 'package:restaurant_app/data/api/api_service.dart';
+import 'package:restaurant_app/data/model/restaurant_detail.dart';
 import 'package:restaurant_app/widget/detail_restaurant_menu.dart';
+import 'package:restaurant_app/widget/restaurant_review.dart';
 
 class RestaurantDetail extends StatefulWidget {
   static const routeName = '/restaurant_detail';
@@ -16,35 +18,72 @@ class RestaurantDetail extends StatefulWidget {
 class _RestaurantDetailState extends State<RestaurantDetail> {
   bool isLoading = true;
 
-  RestaurantElement restaurant = RestaurantElement(
-      city: "",
-      description: "",
-      id: "",
-      menus: Menus(drinks: List.empty(), foods: List.empty()),
-      name: "",
-      pictureId: "",
-      rating: 0);
+  late RestaurantDetailModel _restaurantDetail;
 
-  void restaurantDetail() async {
-    var getJson = await DefaultAssetBundle.of(context)
-        .loadString('assets/json/local_restaurant.json');
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _reviewController = TextEditingController();
 
-    final List<RestaurantElement> restaurantParse = parseRestaurant(getJson);
-
-    var restaurantDetail = restaurantParse
-        .where((restaurant) => restaurant.id == widget.articleId)
-        .toList()[0];
+  Future<void> getRestaurantDetail() async {
+    var getJson = await ApiService().restaurantDetail(widget.articleId);
 
     setState(() {
       isLoading = false;
-      restaurant = restaurantDetail;
+      _restaurantDetail = getJson;
+    });
+  }
+
+  Future<void> addReview(String id, String name, String review) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    if (name.isEmpty || review.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Nama dan Review tidak boleh kosong"),
+        ),
+      );
+      return;
+    }
+
+    var getJson = await ApiService().addReview(id, name, review);
+
+    if (getJson.error == false) {
+      _restaurantDetail.restaurant.customerReviews.clear();
+      _restaurantDetail.restaurant.customerReviews.addAll(
+          getJson.customerReviews.map((e) =>
+              CustomerReview(name: e.name, review: e.review, date: e.date)));
+      _nameController.clear();
+      _reviewController.clear();
+      setState(() {});
+
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text("Berhasil menambahkan review"),
+        ),
+      );
+    } else {
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text("Gagal menambahkan review"),
+        ),
+      );
+    }
+
+    setState(() {
+      isLoading = false;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    restaurantDetail();
+    getRestaurantDetail();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _reviewController.dispose();
+    super.dispose();
   }
 
   @override
@@ -96,7 +135,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
-                              restaurant.name,
+                              _restaurantDetail.restaurants.name,
                               style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -114,7 +153,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                                   size: 14,
                                 ),
                                 Text(
-                                  restaurant.city,
+                                  _restaurantDetail.restaurants.city,
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.normal,
@@ -129,7 +168,8 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                                   size: 14,
                                 ),
                                 Text(
-                                  restaurant.rating.toString(),
+                                  _restaurantDetail.restaurant.rating
+                                      .toString(),
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.normal,
@@ -147,9 +187,10 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: Hero(
-                                  tag: restaurant.pictureId,
+                                  tag: _restaurantDetail.restaurant.rating,
                                   child: Image.network(
-                                    restaurant.pictureId,
+                                    imageMedium +
+                                        _restaurantDetail.restaurant.pictureId,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -157,16 +198,22 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                             ),
                           ),
                           DetailRestaurantMenu(
+                              title: "Categories",
+                              restaurant:
+                                  _restaurantDetail.restaurant.categories),
+                          DetailRestaurantMenu(
                               title: "Makanan",
-                              restaurant: restaurant.menus.foods),
+                              restaurant:
+                                  _restaurantDetail.restaurant.menus.foods),
                           DetailRestaurantMenu(
                               title: "Minuman",
-                              restaurant: restaurant.menus.drinks),
+                              restaurant:
+                                  _restaurantDetail.restaurant.menus.drinks),
                           Padding(
                             padding: const EdgeInsets.only(
                                 left: 12, right: 12, top: 15),
                             child: Text(
-                              restaurant.description,
+                              _restaurantDetail.restaurant.description,
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.normal,
@@ -188,6 +235,158 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                                     "Pesan Sekarang",
                                     style: TextStyle(color: Colors.white),
                                   ))),
+                          Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10, left: 12, right: 12),
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    "Review",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  const Spacer(),
+                                  TextButton(
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                            isScrollControlled: true,
+                                            context: context,
+                                            builder: (context) {
+                                              double modalHeight =
+                                                  MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.5;
+                                              double keyboardHeight =
+                                                  MediaQuery.of(context)
+                                                      .viewInsets
+                                                      .bottom;
+
+                                              return SizedBox(
+                                                height: modalHeight +
+                                                    keyboardHeight,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(12),
+                                                  child: Column(children: [
+                                                    const Text(
+                                                      "Berikan Review",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                    TextField(
+                                                      controller:
+                                                          _nameController,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 20,
+                                                                vertical: 16),
+                                                        hintText: 'Nama',
+                                                        hintStyle:
+                                                            const TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          borderSide:
+                                                              BorderSide.none,
+                                                        ),
+                                                        filled: true,
+                                                        fillColor:
+                                                            Colors.grey[200],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                    TextField(
+                                                      controller:
+                                                          _reviewController,
+                                                      maxLines: 4,
+                                                      keyboardType:
+                                                          TextInputType
+                                                              .multiline,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 20,
+                                                                vertical: 16),
+                                                        hintText: 'Review',
+                                                        hintStyle:
+                                                            const TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          borderSide:
+                                                              BorderSide.none,
+                                                        ),
+                                                        filled: true,
+                                                        fillColor:
+                                                            Colors.grey[200],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          addReview(
+                                                              widget.articleId,
+                                                              _nameController
+                                                                  .text,
+                                                              _reviewController
+                                                                  .text);
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          minimumSize:
+                                                              const Size(
+                                                                  double
+                                                                      .infinity,
+                                                                  50),
+                                                        ),
+                                                        child: const Text(
+                                                          "Kirim Review",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ))
+                                                  ]),
+                                                ),
+                                              );
+                                            });
+                                      },
+                                      child: const Text("Tambah Review",
+                                          style:
+                                              TextStyle(color: Colors.green)))
+                                ],
+                              )),
+                          RestaurantReview(
+                              customerReview:
+                                  _restaurantDetail.restaurant.customerReviews)
                         ]),
                   )));
   }
