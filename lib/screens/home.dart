@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/data/api/api_service.dart';
+import 'package:provider/provider.dart';
 import 'package:restaurant_app/data/model/list_restaurant.dart';
+import 'package:restaurant_app/providers/restaurant_provider.dart';
 import 'package:restaurant_app/widget/restaurant_item.dart';
 
 class Home extends StatefulWidget {
@@ -16,32 +17,9 @@ class _HomeState extends State<Home> {
 
   TextEditingController searchQuery = TextEditingController();
 
-  void searchRestaurant() async {
-    setState(() {
-      isLoading = true;
-    });
-    var getJson = await ApiService().searchRestaurant(searchQuery.text);
-
-    if (getJson.restaurants.isEmpty) {
-      setState(() {
-        restaurants.clear();
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        restaurants = getJson.restaurants;
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-
-    // _restaurant = ApiService().searchRestaurant("");
-
-    searchRestaurant();
   }
 
   @override
@@ -85,26 +63,30 @@ class _HomeState extends State<Home> {
                       height: 50,
                       child: Stack(
                         children: [
-                          TextField(
-                            controller: searchQuery,
-                            onEditingComplete: () => searchRestaurant(),
-                            onChanged: (value) {
-                              if (value == "") {
-                                searchRestaurant();
-                              }
-                            },
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.only(left: 45),
-                              hintText: 'Search',
-                              hintStyle: const TextStyle(color: Colors.black),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide.none,
+                          Consumer<RestaurantProvider>(
+                              builder: (context, value, _) {
+                            return TextField(
+                              controller: searchQuery,
+                              onEditingComplete: () =>
+                                  value.searchRestaurant = searchQuery.text,
+                              onChanged: (values) {
+                                if (values == "") {
+                                  value.searchRestaurant = "";
+                                }
+                              },
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.only(left: 45),
+                                hintText: 'Search',
+                                hintStyle: const TextStyle(color: Colors.black),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[200],
                               ),
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                            ),
-                          ),
+                            );
+                          }),
                           Container(
                             margin: const EdgeInsets.only(top: 12, left: 16),
                             child: Icon(
@@ -117,28 +99,33 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        width: MediaQuery.of(context).size.width,
-                        child: isLoading
-                            ? const Padding(
-                                padding: EdgeInsets.only(top: 20),
-                                child:
-                                    Center(child: CircularProgressIndicator()),
-                              )
-                            : (restaurants.isEmpty)
-                                ? const Center(
-                                    child: Text("Tidak Ada Restoran"),
-                                  )
-                                : ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: restaurants.length,
-                                    itemBuilder: (context, index) {
-                                      return RestaurantItem(
-                                        item: restaurants[index],
-                                      );
-                                    }))
+                      margin: const EdgeInsets.only(top: 16),
+                      width: MediaQuery.of(context).size.width,
+                      child: Consumer<RestaurantProvider>(
+                          builder: (context, state, _) {
+                        if (state.state == ResultState.isLoading) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 20),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        } else if (state.state == ResultState.hasData) {
+                          return ListView.builder(
+                            itemBuilder: (context, index) {
+                              return RestaurantItem(
+                                item: state.restaurants[index],
+                              );
+                            },
+                            itemCount: state.restaurants.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                          );
+                        } else {
+                          return const Center(
+                            child: Text("Tidak Ada Restoran"),
+                          );
+                        }
+                      }),
+                    )
                   ],
                 ),
               ))),
@@ -147,7 +134,6 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
-    // searchQuery.dispose();
     super.dispose();
   }
 }

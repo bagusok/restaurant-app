@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:restaurant_app/constant/colors.dart';
+import 'package:restaurant_app/data/api/api_service.dart';
+import 'package:restaurant_app/providers/restaurant_detail_provider.dart';
+import 'package:restaurant_app/providers/restaurant_provider.dart';
 import 'package:restaurant_app/screens/home.dart';
 import 'package:restaurant_app/screens/restaurant_detail.dart';
 import 'package:restaurant_app/screens/splash_screen.dart';
@@ -51,10 +55,23 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': ((context) => const SplashScreen()),
-        '/home': (context) => const Home(),
-        RestaurantDetail.routeName: (context) => RestaurantDetail(
-              articleId: ModalRoute.of(context)!.settings.arguments as String,
-            ),
+        '/home': (context) => ChangeNotifierProvider(
+            create: (_) => RestaurantProvider(apiService: ApiService()),
+            child: const Home()),
+        RestaurantDetail.routeName: (context) => MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                    create: (_) => RestaurantDetailProvider(
+                        apiService: ApiService(),
+                        id: ModalRoute.of(context)!.settings.arguments
+                            as String)),
+                ChangeNotifierProvider(
+                    create: (_) => RestaurantProvider(apiService: ApiService()))
+              ],
+              child: RestaurantDetail(
+                articleId: ModalRoute.of(context)!.settings.arguments as String,
+              ),
+            )
       },
     );
   }

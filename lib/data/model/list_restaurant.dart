@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final restaurant = restaurantFromJson(jsonString);
-
 import 'dart:convert';
 
 Restaurant restaurantFromJson(String str) =>
@@ -41,6 +37,7 @@ class RestaurantElement {
   String pictureId;
   String city;
   double rating;
+  bool isReviewed = false;
 
   RestaurantElement({
     required this.id,
