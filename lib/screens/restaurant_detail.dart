@@ -345,6 +345,10 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                             value.restaurantDetail.restaurant.customerReviews)
                   ]),
             );
+          } else if (value.state == RestaurantDetailResult.error) {
+            return const Center(
+              child: Text("Error, please check your connection"),
+            );
           } else {
             return const Center(
               child: Text("Error"),

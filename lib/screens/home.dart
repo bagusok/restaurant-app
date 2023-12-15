@@ -119,6 +119,10 @@ class _HomeState extends State<Home> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                           );
+                        } else if (state.state == ResultState.error) {
+                          return const Center(
+                            child: Text("Error, Please check your connection"),
+                          );
                         } else {
                           return const Center(
                             child: Text("Tidak Ada Restoran"),
