@@ -16,7 +16,7 @@ class _FavoriteRestaurantState extends State<FavoriteRestaurant> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorite Restaurant'),
+        title: const Text('Favorite Restaurant'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
