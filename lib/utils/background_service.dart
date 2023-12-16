@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:restaurant_app/data/api/api_service.dart';
-import 'package:restaurant_app/data/model/list_restaurant.dart';
 import 'package:restaurant_app/main.dart';
 import 'package:restaurant_app/utils/notification_helper.dart';
 
@@ -30,12 +29,13 @@ class BackgroundService {
   static Future<void> callback() async {
     final NotificationHelper notificationHelper = NotificationHelper();
 
-    var result =
-        await ApiService().searchRestaurant("") as List<RestaurantElement>;
+    var result = await ApiService().searchRestaurant("");
 
-    var randomIndex = Random().nextInt(result.length);
+    var randomIndex = Random().nextInt(result.restaurants.length);
     await notificationHelper.showNotification(
-        flutterLocalNotificationsPlugin, result[randomIndex]);
+      flutterLocalNotificationsPlugin,
+      result.restaurants[randomIndex],
+    );
 
     _uiSendPort ??= IsolateNameServer.lookupPortByName(_isolateName);
     _uiSendPort?.send(null);

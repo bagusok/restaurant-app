@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_app/common/colors.dart';
 import 'package:restaurant_app/common/navigation.dart';
 import 'package:restaurant_app/data/api/api_service.dart';
-import 'package:restaurant_app/data/model/list_restaurant.dart';
 import 'package:restaurant_app/providers/favorite_provider.dart';
 import 'package:restaurant_app/providers/restaurant_detail_provider.dart';
 import 'package:restaurant_app/providers/restaurant_provider.dart';
@@ -33,17 +32,7 @@ void main() async {
   if (Platform.isAndroid) {
     await AndroidAlarmManager.initialize();
   }
-  await AndroidAlarmManager.oneShot(const Duration(seconds: 1), 444, () {
-    NotificationHelper().showNotification(
-        flutterLocalNotificationsPlugin,
-        RestaurantElement(
-            id: "",
-            name: "ajajja",
-            description: "alala",
-            pictureId: "aaaa",
-            city: "aaa",
-            rating: 0));
-  });
+
   await _notificationHelper.initNotifications(flutterLocalNotificationsPlugin);
 
   runApp(const MyApp());
