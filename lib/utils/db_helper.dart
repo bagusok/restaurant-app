@@ -38,7 +38,6 @@ class DatabaseHelper {
   }
 
   Future<void> insertRestaurant(RestaurantElement restaurant) async {
-    print("ADD RESTAURANT");
     final Database db = await database;
     await db.rawQuery('''
       INSERT INTO $_tableName (id, name, pictureId, city, rating)
@@ -55,7 +54,6 @@ class DatabaseHelper {
   Future<List<RestaurantElement>> getRestaurants() async {
     final Database db = await database;
     List<Map<String, dynamic>> results = await db.query(_tableName);
-    print("INI RESULTS" + results.toString());
     var a = results
         .map(
           (res) => RestaurantElement(
@@ -82,7 +80,6 @@ class DatabaseHelper {
       whereArgs: [id],
     );
 
-    print("INI RESULTS" + results.toString());
     return results.first;
   }
 

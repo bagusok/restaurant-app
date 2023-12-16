@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:restaurant_app/common/navigation.dart';
 import 'package:restaurant_app/data/model/list_restaurant.dart';
 import 'package:restaurant_app/providers/restaurant_provider.dart';
+import 'package:restaurant_app/screens/restaurant_detail.dart';
+import 'package:restaurant_app/utils/notification_helper.dart';
 import 'package:restaurant_app/widget/restaurant_item.dart';
 
 class Home extends StatefulWidget {
@@ -12,6 +15,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final NotificationHelper _notificationHelper = NotificationHelper();
+
   var restaurants = <RestaurantElement>[];
   bool isLoading = true;
 
@@ -20,6 +25,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    _notificationHelper
+        .configureSelectNotificationSubject(RestaurantDetail.routeName);
   }
 
   @override
@@ -46,9 +53,11 @@ class _HomeState extends State<Home> {
         shadowColor: Colors.transparent,
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: Image.asset('assets/images/user-icon.png',
-                  width: 24, height: 24))
+              onPressed: () => Navigation.intentWithData('/settings', ''),
+              icon: const Icon(
+                Icons.notifications,
+                color: Colors.black,
+              ))
         ],
       ),
       body: SafeArea(
@@ -140,6 +149,7 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
+    selectNotificationSubject.close();
     super.dispose();
   }
 }
