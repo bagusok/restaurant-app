@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restaurant_app/constant/urls.dart';
+import 'package:restaurant_app/common/urls.dart';
 import 'package:restaurant_app/providers/favorite_provider.dart';
 import 'package:restaurant_app/screens/restaurant_detail.dart';
 
