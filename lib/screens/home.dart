@@ -27,10 +27,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pushNamed('/favorite');
+          },
           icon: const Icon(
-            Icons.menu,
-            color: Colors.black,
+            Icons.favorite_border,
+            color: Colors.green,
           ),
         ),
         title: const Center(

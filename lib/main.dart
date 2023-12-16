@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/constant/colors.dart';
 import 'package:restaurant_app/data/api/api_service.dart';
+import 'package:restaurant_app/providers/favorite_provider.dart';
 import 'package:restaurant_app/providers/restaurant_detail_provider.dart';
 import 'package:restaurant_app/providers/restaurant_provider.dart';
+import 'package:restaurant_app/screens/favorite_restaurant.dart';
 import 'package:restaurant_app/screens/home.dart';
 import 'package:restaurant_app/screens/restaurant_detail.dart';
 import 'package:restaurant_app/screens/splash_screen.dart';
@@ -58,6 +60,10 @@ class MyApp extends StatelessWidget {
         '/home': (context) => ChangeNotifierProvider(
             create: (_) => RestaurantProvider(apiService: ApiService()),
             child: const Home()),
+        '/favorite': (context) => ChangeNotifierProvider(
+              create: (_) => FavouriteProvider(),
+              child: FavoriteRestaurant(),
+            ),
         RestaurantDetail.routeName: (context) => MultiProvider(
               providers: [
                 ChangeNotifierProvider(
@@ -66,7 +72,9 @@ class MyApp extends StatelessWidget {
                         id: ModalRoute.of(context)!.settings.arguments
                             as String)),
                 ChangeNotifierProvider(
-                    create: (_) => RestaurantProvider(apiService: ApiService()))
+                    create: (_) =>
+                        RestaurantProvider(apiService: ApiService())),
+                ChangeNotifierProvider(create: (_) => FavouriteProvider()),
               ],
               child: RestaurantDetail(
                 articleId: ModalRoute.of(context)!.settings.arguments as String,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/constant/urls.dart';
+import 'package:restaurant_app/data/model/list_restaurant.dart';
+import 'package:restaurant_app/providers/favorite_provider.dart';
 import 'package:restaurant_app/providers/restaurant_detail_provider.dart';
 import 'package:restaurant_app/providers/restaurant_provider.dart';
 import 'package:restaurant_app/widget/detail_restaurant_menu.dart';
@@ -85,12 +87,54 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        value.restaurantDetail.restaurant.name,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Row(
+                        children: [
+                          Text(
+                            value.restaurantDetail.restaurant.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Spacer(),
+                          Consumer<FavouriteProvider>(
+                              builder: (context2, value2, _) {
+                            var check = value2.favouriteList
+                                .where(
+                                    (element) => element.id == widget.articleId)
+                                .isNotEmpty;
+                            return IconButton(
+                                onPressed: () async {
+                                  if (check == true) {
+                                    await value2
+                                        .removeRestaurant(widget.articleId);
+                                    showSnackBar(
+                                        "Berhasil menghapus dari favorit");
+                                  } else {
+                                    await value2.addFavorite(RestaurantElement(
+                                        id: widget.articleId,
+                                        name: value
+                                            .restaurantDetail.restaurant.name,
+                                        description: value.restaurantDetail
+                                            .restaurant.description,
+                                        pictureId: value.restaurantDetail
+                                            .restaurant.pictureId,
+                                        city: value
+                                            .restaurantDetail.restaurant.city,
+                                        rating: value.restaurantDetail
+                                            .restaurant.rating));
+                                    showSnackBar(
+                                        "Berhasil menambahkan ke favorit");
+                                  }
+                                },
+                                icon: Icon(
+                                  check == true
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: Theme.of(context).primaryColor,
+                                ));
+                          })
+                        ],
                       ),
                     ),
                     Padding(
