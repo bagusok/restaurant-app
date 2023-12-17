@@ -16,8 +16,14 @@ class _FavoriteRestaurantState extends State<FavoriteRestaurant> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorite Restaurant'),
-      ),
+          title: const Text('Favorite Restaurant'),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, "/home", (route) => false);
+            },
+            icon: const Icon(Icons.arrow_back),
+          )),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Consumer<FavouriteProvider>(builder: (context, value, _) {
@@ -34,7 +40,10 @@ class _FavoriteRestaurantState extends State<FavoriteRestaurant> {
                   child: ListTile(
                     onTap: () {
                       Navigator.pushNamed(context, RestaurantDetail.routeName,
-                          arguments: restaurant.id);
+                          arguments: {
+                            "articleId": restaurant.id,
+                            "fromPage": "favorite"
+                          });
                     },
                     leading: Image.network(
                       imageMedium + restaurant.pictureId,
@@ -44,7 +53,9 @@ class _FavoriteRestaurantState extends State<FavoriteRestaurant> {
                     subtitle: Text(restaurant.city),
                     trailing: IconButton(
                       onPressed: () {
-                        value.removeRestaurant(restaurant.id);
+                        // value.removeRestaurant(restaurant.id);
+                        Provider.of<FavouriteProvider>(context, listen: false)
+                            .removeRestaurant(restaurant.id);
                       },
                       icon: const Icon(Icons.delete),
                     ),

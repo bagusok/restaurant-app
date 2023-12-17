@@ -11,8 +11,10 @@ import 'package:restaurant_app/widget/restaurant_review.dart';
 class RestaurantDetail extends StatefulWidget {
   static const routeName = '/restaurant_detail';
   final String articleId;
+  final String fromPage;
 
-  const RestaurantDetail({super.key, required this.articleId});
+  const RestaurantDetail(
+      {super.key, required this.articleId, required this.fromPage});
 
   @override
   State<RestaurantDetail> createState() => _RestaurantDetailState();
@@ -57,7 +59,11 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
           ],
           leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              if (widget.fromPage == "home") {
+                Navigator.pop(context);
+              } else {
+                Navigator.pushReplacementNamed(context, "/favorite");
+              }
             },
             icon: const Icon(
               Icons.arrow_back,
@@ -123,6 +129,7 @@ class _RestaurantDetailState extends State<RestaurantDetail> {
                                             .restaurantDetail.restaurant.city,
                                         rating: value.restaurantDetail
                                             .restaurant.rating));
+
                                     showSnackBar(
                                         "Berhasil menambahkan ke favorit");
                                   }

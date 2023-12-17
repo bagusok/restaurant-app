@@ -33,6 +33,8 @@ class FavouriteProvider with ChangeNotifier {
             rating: e.rating))
         .toList();
 
+    notifyListeners();
+
     if (_favouriteList.isEmpty) {
       _state = FavoriteState.noData;
     } else {
@@ -47,8 +49,13 @@ class FavouriteProvider with ChangeNotifier {
   }
 
   Future<void> removeRestaurant(String id) async {
-    await _dbHelper.removeRestaurant(id);
-    getFavourite();
+    try {
+      await _dbHelper.removeRestaurant(id);
+      getFavourite();
+    } catch (e) {
+      _state = FavoriteState.error;
+      notifyListeners();
+    }
   }
 
   Future<bool> isFavourite(String id) async {
