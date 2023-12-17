@@ -69,7 +69,7 @@ class RestaurantItem extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, RestaurantDetail.routeName,
-                    arguments: item.id);
+                    arguments: {"articleId": item.id, "fromPage": "home"});
               })),
     );
   }

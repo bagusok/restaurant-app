@@ -93,22 +93,26 @@ class MyApp extends StatelessWidget {
               create: (_) => SchedulingProvider(),
               child: const Settings(),
             ),
-        RestaurantDetail.routeName: (context) => MultiProvider(
-              providers: [
-                ChangeNotifierProvider(
-                    create: (_) => RestaurantDetailProvider(
-                        apiService: ApiService(),
-                        id: ModalRoute.of(context)!.settings.arguments
-                            as String)),
-                ChangeNotifierProvider(
-                    create: (_) =>
-                        RestaurantProvider(apiService: ApiService())),
-                ChangeNotifierProvider(create: (_) => FavouriteProvider()),
-              ],
-              child: RestaurantDetail(
-                articleId: ModalRoute.of(context)!.settings.arguments as String,
-              ),
-            )
+        RestaurantDetail.routeName: (context) {
+          Map<String, String> arguments =
+              ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                  create: (_) => RestaurantDetailProvider(
+                      apiService: ApiService(),
+                      id: arguments["articleId"] as String)),
+              ChangeNotifierProvider(
+                  create: (_) => RestaurantProvider(apiService: ApiService())),
+              ChangeNotifierProvider(create: (_) => FavouriteProvider()),
+            ],
+            child: RestaurantDetail(
+              articleId: arguments["articleId"] ?? "",
+              fromPage: arguments["fromPage"] ?? "",
+            ),
+          );
+        }
       },
     );
   }
