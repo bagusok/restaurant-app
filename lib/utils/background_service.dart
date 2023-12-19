@@ -29,7 +29,7 @@ class BackgroundService {
   static Future<void> callback() async {
     final NotificationHelper notificationHelper = NotificationHelper();
 
-    var result = await ApiService().searchRestaurant("");
+    var result = await ApiService(null).searchRestaurant("");
 
     var randomIndex = Random().nextInt(result.restaurants.length);
     await notificationHelper.showNotification(

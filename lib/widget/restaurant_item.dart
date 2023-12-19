@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/common/navigation.dart';
 import 'package:restaurant_app/common/urls.dart';
 import 'package:restaurant_app/data/model/list_restaurant.dart';
 import 'package:restaurant_app/screens/restaurant_detail.dart';
@@ -68,8 +69,11 @@ class RestaurantItem extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                Navigator.pushNamed(context, RestaurantDetail.routeName,
-                    arguments: {"articleId": item.id, "fromPage": "home"});
+                // Navigator.pushNamed(context, RestaurantDetail.routeName,
+                //     arguments: {"restaurant_id": item.id, "fromPage": "home"});
+                Navigation.navigateToDetailRestaurant(
+                    RestaurantDetail.routeName,
+                    {"restaurant_id": item.id, "fromPage": "home"});
               })),
     );
   }

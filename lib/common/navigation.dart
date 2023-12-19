@@ -8,4 +8,8 @@ class Navigation {
   }
 
   static back() => navigatorKey.currentState?.pop();
+
+  static navigateToDetailRestaurant(String route, Map<String, String> arg) {
+    navigatorKey.currentState?.pushNamed(route, arguments: arg);
+  }
 }
