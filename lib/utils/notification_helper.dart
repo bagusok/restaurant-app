@@ -67,7 +67,14 @@ class NotificationHelper {
   void configureSelectNotificationSubject(String route) {
     selectNotificationSubject.stream.listen(
       (String restaurantId) async {
-        Navigation.intentWithData(route, restaurantId);
+        // Navigation.intentWithData(route, {
+        //   restaurantId: restaurantId,
+        //   fromPage: 'home'
+        // });
+        Navigation.navigateToDetailRestaurant(route, {
+          'restaurant_id': restaurantId,
+          'fromPage': 'home',
+        });
       },
     );
   }

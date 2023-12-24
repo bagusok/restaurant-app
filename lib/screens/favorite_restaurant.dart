@@ -41,7 +41,7 @@ class _FavoriteRestaurantState extends State<FavoriteRestaurant> {
                     onTap: () {
                       Navigator.pushNamed(context, RestaurantDetail.routeName,
                           arguments: {
-                            "articleId": restaurant.id,
+                            "restaurant_id": restaurant.id,
                             "fromPage": "favorite"
                           });
                     },

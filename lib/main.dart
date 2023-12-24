@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': ((context) => const SplashScreen()),
         '/home': (context) => ChangeNotifierProvider(
-            create: (_) => RestaurantProvider(apiService: ApiService()),
+            create: (_) => RestaurantProvider(apiService: ApiService(null)),
             child: const Home()),
         '/favorite': (context) => ChangeNotifierProvider(
               create: (_) => FavouriteProvider(),
@@ -101,14 +101,15 @@ class MyApp extends StatelessWidget {
             providers: [
               ChangeNotifierProvider(
                   create: (_) => RestaurantDetailProvider(
-                      apiService: ApiService(),
-                      id: arguments["articleId"] as String)),
+                      apiService: ApiService(null),
+                      id: arguments["restaurant_id"] as String)),
               ChangeNotifierProvider(
-                  create: (_) => RestaurantProvider(apiService: ApiService())),
+                  create: (_) =>
+                      RestaurantProvider(apiService: ApiService(null))),
               ChangeNotifierProvider(create: (_) => FavouriteProvider()),
             ],
             child: RestaurantDetail(
-              articleId: arguments["articleId"] ?? "",
+              articleId: arguments["restaurant_id"] ?? "",
               fromPage: arguments["fromPage"] ?? "",
             ),
           );
