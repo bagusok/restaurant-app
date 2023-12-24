@@ -1,16 +1,8 @@
-# restaurant_app
+# Restaurant App
+- Get Data Restaurant From API
+- Add Comment to Restaurant
+- Add and delete favorite restaurant
+- Get restaurant recomendation of the day by notification at 11 am.
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Screenshot 2023-12-24 161645](https://github.com/bagusok/restaurant-app/assets/52571584/baecabc3-5ad6-45b4-b3b7-deaa9ee0089e)
+![Screenshot 2023-12-24 161631](https://github.com/bagusok/restaurant-app/assets/52571584/acf9927a-d661-4dc6-b5b3-17574c978bd8)
